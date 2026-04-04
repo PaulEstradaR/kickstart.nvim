@@ -1,5 +1,3 @@
--- TODO: live search results
-
 -- NOTE: [[ Basic Settings ]]
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -53,15 +51,10 @@ vim.keymap.set('n', '<leader>e', vim.cmd.Lexplore, { desc = 'File Explorer' })
 vim.keymap.set('n', 'oo', 'o<Esc>', { desc = '' })
 vim.keymap.set('n', 'OO', 'O<Esc>', { desc = '' })
 
--- moves yank buffer to system clipboard
+-- moves yank buffer to system clipboard, folke/which-key is around line ~200
 vim.keymap.set('n', '<leader>y', '"+y', { desc = 'Yank to clipboard' })
 vim.keymap.set('v', '<leader>y', '"+y', { desc = 'Yank to clipboard' })
 vim.keymap.set('v', '<leader>Y', '"+y', { desc = 'Yank to clipboard' })
-
-require('which-key').add {
-  { '<leader>e', group = ' File explorer', icon = '󱏒' },
-  { '<leader>y', group = 'Yank to clipboard', icon = '󰆏' },
-}
 
 -- move selection to void register and paste current buffer
 vim.keymap.set('x', '<leader>p', '"dP')
@@ -205,6 +198,8 @@ require('lazy').setup({
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
         { 'gr', group = 'LSP Actions', mode = { 'n' } },
+        { '<leader>e', group = 'File explorer', icon = '󱏒' },
+        { '<leader>y', group = 'Yank to clipboard', icon = '󰆏' },
       },
     },
   },
