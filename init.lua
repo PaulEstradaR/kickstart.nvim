@@ -16,6 +16,7 @@ vim.o.updatetime = 250
 vim.o.timeoutlen = 300
 vim.o.signcolumn = 'yes'
 vim.o.cursorline = true
+vim.o.termguicolors = true
 
 -- Enable undo/redo changes even after closing and reopening a file
 vim.o.undofile = true
@@ -32,8 +33,10 @@ vim.o.splitbelow = true
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
--- Preview substitutions live, as you type!
+-- nvim searches and replaces
 vim.o.inccommand = 'split'
+vim.o.hlsearch = false
+vim.o.incsearch = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
@@ -49,6 +52,13 @@ vim.keymap.set('n', '<leader>e', vim.cmd.Lexplore, { desc = 'File Explorer' })
 -- Insert new lines from normal mode
 vim.keymap.set('n', 'oo', 'o<Esc>', { desc = '' })
 vim.keymap.set('n', 'OO', 'O<Esc>', { desc = '' })
+
+-- move selection to void register and paste current buffer
+vim.keymap.set('x', '<leader>p', '"dP')
+
+-- moves selected lines in visual mode
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
