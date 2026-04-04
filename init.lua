@@ -53,6 +53,16 @@ vim.keymap.set('n', '<leader>e', vim.cmd.Lexplore, { desc = 'File Explorer' })
 vim.keymap.set('n', 'oo', 'o<Esc>', { desc = '' })
 vim.keymap.set('n', 'OO', 'O<Esc>', { desc = '' })
 
+-- moves yank buffer to system clipboard
+vim.keymap.set('n', '<leader>y', '"+y', { desc = 'Yank to clipboard' })
+vim.keymap.set('v', '<leader>y', '"+y', { desc = 'Yank to clipboard' })
+vim.keymap.set('v', '<leader>Y', '"+y', { desc = 'Yank to clipboard' })
+
+require('which-key').add {
+  { '<leader>e', group = ' File explorer', icon = '󱏒' },
+  { '<leader>y', group = 'Yank to clipboard', icon = '󰆏' },
+}
+
 -- move selection to void register and paste current buffer
 vim.keymap.set('x', '<leader>p', '"dP')
 
