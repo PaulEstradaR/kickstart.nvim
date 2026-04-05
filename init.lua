@@ -7,6 +7,7 @@ vim.g.netrw_banner = 0
 
 vim.o.number = true
 vim.o.relativenumber = true
+vim.o.scrolloff = 10
 vim.o.mouse = 'a'
 vim.o.showmode = false
 vim.o.breakindent = true
@@ -15,13 +16,7 @@ vim.o.timeoutlen = 300
 vim.o.signcolumn = 'yes'
 vim.o.cursorline = true
 vim.o.termguicolors = true
-
--- Enable undo/redo changes even after closing and reopening a file
 vim.o.undofile = true
-
--- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
-vim.o.ignorecase = true
-vim.o.smartcase = true
 
 -- Configure how new splits should be opened
 vim.o.splitright = true
@@ -35,9 +30,8 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.o.inccommand = 'split'
 vim.o.hlsearch = false
 vim.o.incsearch = true
-
--- Minimal number of screen lines to keep above and below the cursor.
-vim.o.scrolloff = 10
+vim.o.ignorecase = true
+vim.o.smartcase = true
 
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 vim.o.confirm = true
@@ -55,6 +49,9 @@ vim.keymap.set('n', 'OO', 'O<Esc>', { desc = '' })
 vim.keymap.set('n', '<leader>y', '"+y', { desc = 'Yank to clipboard' })
 vim.keymap.set('v', '<leader>y', '"+y', { desc = 'Yank to clipboard' })
 vim.keymap.set('v', '<leader>Y', '"+y', { desc = 'Yank to clipboard' })
+
+-- deletes line without saving to buffer
+vim.keymap.set('n', '<leader>dd', '"_dd', { desc = 'Delete line w/o saving' })
 
 -- move selection to void register and paste current buffer
 vim.keymap.set('x', '<leader>p', '"dP')
@@ -83,41 +80,48 @@ vim.diagnostic.config {
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
--- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
--- is not what someone will guess without a bit more experience.
---
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
+-- Exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
--- TIP: Disable arrow keys in normal mode
+-- Disable arrow keys in normal mode
 vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move left"<CR>')
 vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move right"<CR>')
 vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move up"<CR>')
 vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move down"<CR>')
 
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---  See `:help wincmd` for a list of all window commands
+-- NOTE: [[ Window nativagtion ]]
+
+-- Create window splits
+vim.keymap.set('n', '<leader>wv', '<cmd>vnew<CR><cmd>Explore<CR>', { desc = '[|] Create vertical split' })
+vim.keymap.set('n', '<leader>wh', '<cmd>new<CR><cmd>Explore<CR>', { desc = '[-] Create horizontal split' })
+
+-- Use CTRL+<hjkl> to switch between windows
+-- See `:help wincmd` for a list of all window commands
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
--- [[ Some terminals have colliding keymaps or are not able to send distinct keycodes ]]
--- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
--- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
--- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
--- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
-
 -- NOTE: [[ Basic Autocommands ]]
 
--- Highlight when yanking (copying) text
+-- Highlight when yanking text
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function() vim.hl.on_yank() end,
+})
+
+-- Start nvim always on Netrw Ex
+vim.api.nvim_create_autocmd('VimEnter', {
+  callback = function()
+    if vim.fn.argc() == 0 then vim.cmd 'Explore' end
+  end,
+})
+
+-- Wipe Netrw buffers on leave
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'netrw',
+  callback = function() vim.bo.bufhidden = 'wipe' end,
 })
 
 -- NOTE: [[ Install `lazy.nvim` plugin manager ]]
@@ -132,7 +136,7 @@ end
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
--- NOTE: Here is where you install your plugins.
+-- NOTE: [[ Plugins ]]
 require('lazy').setup({
   { 'NMAC427/guess-indent.nvim', opts = {} },
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
@@ -169,6 +173,9 @@ require('lazy').setup({
         { 'gr', group = 'LSP Actions', mode = { 'n' } },
         { '<leader>e', group = 'File explorer', icon = '󱏒' },
         { '<leader>y', group = 'Yank to clipboard', icon = '󰆏' },
+        { '<leader>d', group = 'Delete special', icon = '󰮉' },
+        { '<leader>dd', group = 'Delete line w/o saving', icon = '󰮉' },
+        { '<leader>w', group = 'Windows', icon = '󰖲' },
       },
     },
   },
