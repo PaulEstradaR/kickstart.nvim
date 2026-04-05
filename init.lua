@@ -17,10 +17,8 @@ vim.o.signcolumn = 'yes'
 vim.o.cursorline = true
 vim.o.termguicolors = true
 vim.o.undofile = true
-
--- Configure how new splits should be opened
-vim.o.splitright = true
-vim.o.splitbelow = true
+vim.o.confirm = true
+vim.o.foldlevelstart = 99
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 vim.o.list = true
@@ -33,8 +31,9 @@ vim.o.incsearch = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
 
--- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
-vim.o.confirm = true
+-- Configure how new splits should be opened
+vim.o.splitright = true
+vim.o.splitbelow = true
 
 -- NOTE: [[ Basic Keymaps ]]
 
@@ -42,8 +41,8 @@ vim.o.confirm = true
 vim.keymap.set('n', '<leader>e', vim.cmd.Lexplore, { desc = 'File Explorer' })
 
 -- Insert new lines from normal mode
-vim.keymap.set('n', 'oo', 'o<Esc>', { desc = '' })
-vim.keymap.set('n', 'OO', 'O<Esc>', { desc = '' })
+vim.keymap.set('n', 'oo', 'o<Esc>k', { desc = '' })
+vim.keymap.set('n', 'OO', 'O<Esc>j', { desc = '' })
 
 -- moves yank buffer to system clipboard, folke/which-key is around line ~160
 vim.keymap.set('n', '<leader>y', '"+y', { desc = 'Yank to clipboard' })
@@ -59,6 +58,8 @@ vim.keymap.set('x', '<leader>p', '"dP')
 -- moves selected lines in visual mode
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
+vim.keymap.set('v', 'L', '>gv')
+vim.keymap.set('v', 'H', '<gv')
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -172,6 +173,7 @@ require('lazy').setup({
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
         { 'gr', group = 'LSP Actions', mode = { 'n' } },
         { '<leader>e', group = 'File explorer', icon = '󱏒' },
+        { 'gd', group = 'Go to definition', mode = 'n' },
         { '<leader>y', group = 'Yank to clipboard', icon = '󰆏' },
         { '<leader>d', group = 'Delete to void', icon = '󰮉' },
         { '<leader>dd', group = 'Delete line to void', icon = '󰮉' },
@@ -691,8 +693,8 @@ require('lazy').setup({
 
         -- enables treesitter based folds
         -- for more info on folds see `:help folds`
-        -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-        -- vim.wo.foldmethod = 'expr'
+        vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+        vim.wo.foldmethod = 'expr'
 
         -- enables treesitter based indentation
         vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
