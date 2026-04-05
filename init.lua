@@ -92,8 +92,8 @@ vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move down"<CR>')
 -- NOTE: [[ Window nativagtion ]]
 
 -- Create window splits
-vim.keymap.set('n', '<leader>wv', '<cmd>vnew<CR><cmd>Explore<CR>', { desc = '[|] Create vertical split' })
-vim.keymap.set('n', '<leader>wh', '<cmd>new<CR><cmd>Explore<CR>', { desc = '[-] Create horizontal split' })
+vim.keymap.set('n', '<leader>wv', '<cmd>vnew<CR><cmd>Explore<CR>', { desc = 'Create vertical split' })
+vim.keymap.set('n', '<leader>wh', '<cmd>new<CR><cmd>Explore<CR>', { desc = 'Create horizontal split' })
 
 -- Use CTRL+<hjkl> to switch between windows
 -- See `:help wincmd` for a list of all window commands
@@ -167,14 +167,14 @@ require('lazy').setup({
 
       -- Document existing key chains
       spec = {
-        { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
-        { '<leader>t', group = '[T]oggle' },
+        { '<leader>s', group = 'Search', mode = { 'n', 'v' }, icon = '󰨭' },
+        { '<leader>t', group = 'Toggle', icon = '' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
         { 'gr', group = 'LSP Actions', mode = { 'n' } },
         { '<leader>e', group = 'File explorer', icon = '󱏒' },
         { '<leader>y', group = 'Yank to clipboard', icon = '󰆏' },
-        { '<leader>d', group = 'Delete special', icon = '󰮉' },
-        { '<leader>dd', group = 'Delete line w/o saving', icon = '󰮉' },
+        { '<leader>d', group = 'Delete to void', icon = '󰮉' },
+        { '<leader>dd', group = 'Delete line to void', icon = '󰮉' },
         { '<leader>w', group = 'Windows', icon = '󰖲' },
       },
     },
