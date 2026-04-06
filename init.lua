@@ -567,18 +567,40 @@ require('lazy').setup({
   },
   -- NOTE:ColorScheme configuration
   {
-    'folke/tokyonight.nvim',
+    'marko-cerovac/material.nvim',
     priority = 1000,
     config = function()
       ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
-        styles = {
-          comments = { italic = true },
-        },
-        on_colors = function(colors) colors.bg = '#0d1117' end,
-      }
+      require('material').setup {
 
-      vim.cmd.colorscheme 'tokyonight-night'
+        contrast = {
+          terminal = true, -- Enable contrast for the built-in terminal
+          sidebars = true, -- Enable contrast for sidebar-like windows ( for example Nvim-Tree )
+          floating_windows = true, -- Enable contrast for floating windows
+          cursor_line = false, -- Enable darker background for the cursor line
+          lsp_virtual_text = true, -- Enable contrasted background for lsp virtual text
+          non_current_windows = false, -- Enable contrasted background for non-current windows
+          filetypes = {}, -- Specify which filetypes get the contrasted (darker) background
+        },
+
+        plugins = {
+          'mini',
+          'telescope',
+          'which-key',
+        },
+
+        high_visibility = {
+          lighter = false, -- Enable higher contrast text for lighter style
+          darker = true, -- Enable higher contrast text for darker style
+        },
+
+        lualine_style = 'default', -- Lualine style ( can be 'stealth' or 'default' )
+
+        custom_colors = nil, -- If you want to override the default colors, set this to a function
+
+        custom_highlights = {}, -- Overwrite highlights with your own
+      }
+      vim.cmd.colorscheme 'material-deep-ocean'
     end,
   },
   { -- Highlight todo, notes, etc in comments
