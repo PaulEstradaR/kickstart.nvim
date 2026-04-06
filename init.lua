@@ -19,6 +19,8 @@ vim.o.termguicolors = true
 vim.o.undofile = true
 vim.o.confirm = true
 vim.o.foldlevelstart = 99
+vim.o.smartindent = true
+vim.o.autoindent = true
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 vim.o.list = true
@@ -587,9 +589,9 @@ require('lazy').setup({
         plugins = { -- Uncomment the plugins that you use to highlight them
           'blink',
           'indent-blankline',
-          --'mini',
           'telescope',
           'which-key',
+          --'mini',
           -- "harpoon",
           -- "hop",
           -- "illuminate",
@@ -598,33 +600,31 @@ require('lazy').setup({
         custom_highlights = {
           -- UI
           Normal = { fg = '#E6E1CF', bg = '#0A0E14' },
-          Cursor = { bg = '#FFB454' },
+          LineNr = { fg = '#d4d4d4' },
           CursorLine = { bg = '#1f1f2e' },
           CursorLineNr = { fg = '#FFB454', bold = true },
-          LineNr = { fg = '#d4d4d4' },
+          Cursor = { bg = '#FFB454' },
           VertSplit = { fg = '#3B4260' },
           WinSeparator = { fg = '#3B4260' },
           Comment = { fg = '#5C6773', italic = true },
 
           -- Syntax (Tree-sitter)
-          ['@keyword'] = { fg = '#FF8F40' }, -- warm orange
-          ['@type'] = { fg = '#39BAE6' },
           ['@variable'] = { fg = '#E6E1CF' },
           ['@variable.member'] = { fg = '#E6E1CF' },
           ['@field'] = { fg = '#E6E1CF' },
-          ['@property'] = { fg = '#ff60c5' },
-          ['@parameter'] = { fg = '#FFB454' },
-
+          ['@string'] = { fg = '#AAD94C' },
           ['@function'] = { fg = '#39BAE6' },
           ['@function.call'] = { fg = '#39BAE6' },
           ['@method'] = { fg = '#39BAE6' },
-
-          ['@string'] = { fg = '#AAD94C' },
+          ['@type'] = { fg = '#39BAE6' },
           ['@number'] = { fg = '#ff7733' },
-          ['@boolean'] = { fg = '#FFB454' },
-          ['@operator'] = { fg = '#ff7733' },
-          ['@tag'] = { fg = '#FF8F40' },
+          ['@boolean'] = { fg = '#ff7733' },
+          ['@operator'] = { fg = '#fc9b52' },
+          ['@parameter'] = { fg = '#fc9b52' },
+          ['@keyword'] = { fg = '#fc9b52' },
+          ['@tag'] = { fg = '#fc9b52' },
           ['@tag.attribute'] = { fg = '#ff60c5' },
+          ['@property'] = { fg = '#ff60c5' },
         },
       }
 
@@ -634,7 +634,7 @@ require('lazy').setup({
       vim.api.nvim_set_hl(0, 'MiniStatuslineModeInsert', { fg = '#0A0E14', bg = '#ff7733', bold = true })
       vim.api.nvim_set_hl(0, 'MiniStatuslineModeReplace', { fg = '#0A0E14', bg = '#f960ff', bold = true })
       vim.api.nvim_set_hl(0, 'MiniStatuslineModeVisual', { fg = '#0A0E14', bg = '#ff60c5', bold = true })
-      vim.api.nvim_set_hl(0, 'MiniStatuslineModeCommand', { fg = '#0A0E14', bg = '#ff6060', bold = true })
+      vim.api.nvim_set_hl(0, 'MiniStatuslineModeCommand', { fg = '#0A0E14', bg = '#e03939', bold = true })
       -- mini.statusline filename color
       vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#aad94c', bg = '#0A0E14', bold = true })
     end,
