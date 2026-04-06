@@ -413,6 +413,7 @@ require('lazy').setup({
         ts_ls = {},
         intelephense = {},
         duster = {},
+        ['css-lsp'] = {},
         ['julia-lsp'] = {},
         ['vue-language-server'] = {},
 
@@ -647,8 +648,31 @@ require('lazy').setup({
     branch = 'main',
     config = function()
       -- ensure basic parser are installed
-      local parsers =
-        { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'php', 'typescript', 'julia', 'python', 'vue' }
+      local parsers = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+        'php',
+        'typescript',
+        'julia',
+        'python',
+        'vue',
+        'css',
+        'xml',
+        'tsx',
+        'tmux',
+        'sql',
+        'json',
+        'cpp',
+      }
       require('nvim-treesitter').install(parsers)
 
       ---@param buf integer
