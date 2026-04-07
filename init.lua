@@ -1,4 +1,7 @@
 -- NOTE: [[ Basic Settings ]]
+
+-- TODO: sync Netrw and <leader>sf
+
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = true
@@ -7,7 +10,7 @@ vim.g.netrw_banner = 0
 
 vim.o.number = true
 vim.o.relativenumber = true
-vim.o.scrolloff = 10
+vim.o.scrolloff = 14
 vim.o.mouse = 'a'
 vim.o.showmode = false
 vim.o.breakindent = true
@@ -21,6 +24,10 @@ vim.o.confirm = true
 vim.o.foldlevelstart = 99
 vim.o.smartindent = true
 vim.o.autoindent = true
+
+-- Tab indent sizes
+vim.o.tabstop = 2
+vim.o.shiftwidth = 2
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 vim.o.list = true
@@ -404,17 +411,18 @@ require('lazy').setup({
           end
         end,
       })
-
-      -- Enable the following language servers
+      -- NOTE: LSP, Linters, formatter instalations
       ---@type table<string, vim.lsp.Config>
       local servers = {
 
         stylua = {}, -- Used to format Lua code
         clangd = {},
-        pyright = {},
         ts_ls = {},
+        eslint_d = {},
         intelephense = {},
         duster = {},
+        gopls = {},
+        pyright = {},
         ['css-lsp'] = {},
         ['julia-lsp'] = {},
         ['vue-language-server'] = {},
@@ -452,7 +460,7 @@ require('lazy').setup({
       -- Ensure the servers and tools above are installed
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        -- You can add other tools here that you want Mason to install
+        --Ensure here
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -463,7 +471,6 @@ require('lazy').setup({
       end
     end,
   },
-
   { -- Autoformat
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
@@ -623,19 +630,18 @@ require('lazy').setup({
           ['@parameter'] = { fg = '#fc9b52' },
           ['@keyword'] = { fg = '#fc9b52' },
           ['@tag'] = { fg = '#fc9b52' },
-          ['@tag.attribute'] = { fg = '#ff60c5' },
-          ['@property'] = { fg = '#ff60c5' },
+          ['@tag.attribute'] = { fg = '#fe59c2' },
+          ['@property'] = { fg = '#fe59c2' },
         },
       }
 
       vim.cmd.colorscheme 'material-deep-ocean'
       -- mini.statusline modes color
-      vim.api.nvim_set_hl(0, 'MiniStatuslineModeNormal', { fg = '#0A0E14', bg = '#aad94c', bold = true })
-      vim.api.nvim_set_hl(0, 'MiniStatuslineModeInsert', { fg = '#0A0E14', bg = '#ff7733', bold = true })
-      vim.api.nvim_set_hl(0, 'MiniStatuslineModeReplace', { fg = '#0A0E14', bg = '#f960ff', bold = true })
-      vim.api.nvim_set_hl(0, 'MiniStatuslineModeVisual', { fg = '#0A0E14', bg = '#ff60c5', bold = true })
-      vim.api.nvim_set_hl(0, 'MiniStatuslineModeCommand', { fg = '#0A0E14', bg = '#e03939', bold = true })
-      -- mini.statusline filename color
+      vim.api.nvim_set_hl(0, 'MiniStatuslineModeNormal', { fg = '#000000', bg = '#aad94c', bold = true })
+      vim.api.nvim_set_hl(0, 'MiniStatuslineModeInsert', { fg = '#000000', bg = '#ff7733', bold = true })
+      vim.api.nvim_set_hl(0, 'MiniStatuslineModeReplace', { fg = '#000000', bg = '#f960ff', bold = true })
+      vim.api.nvim_set_hl(0, 'MiniStatuslineModeVisual', { fg = '#000000', bg = '#fe59c2', bold = true })
+      vim.api.nvim_set_hl(0, 'MiniStatuslineModeCommand', { fg = '#000000', bg = '#e03939', bold = true })
       vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#aad94c', bg = '#0A0E14', bold = true })
     end,
   },
@@ -692,15 +698,10 @@ require('lazy').setup({
         'html',
         'lua',
         'luadoc',
-        'markdown',
-        'markdown_inline',
-        'query',
-        'vim',
-        'vimdoc',
-        'php',
-        'typescript',
         'julia',
         'python',
+        'php',
+        'typescript',
         'vue',
         'css',
         'xml',
@@ -709,6 +710,12 @@ require('lazy').setup({
         'sql',
         'json',
         'cpp',
+        'go',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
       }
       require('nvim-treesitter').install(parsers)
 
@@ -758,7 +765,6 @@ require('lazy').setup({
   -- require 'kickstart.plugins.gitsigns',
 }, { ---@diagnostic disable-line: missing-fields
   ui = {
-    -- If you are using a Nerd Font: set icons to an empty table which will use the
     -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
     icons = vim.g.have_nerd_font and {} or {
       cmd = '⌘',
