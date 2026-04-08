@@ -51,7 +51,6 @@ vim.keymap.set('n', '<leader>e', vim.cmd.Lexplore, { desc = 'File Explorer' })
 
 -- Insert new lines from normal mode
 vim.keymap.set('n', 'oo', 'o<Esc>k', { desc = '' })
-vim.keymap.set('n', 'OO', 'O<Esc>j', { desc = '' })
 
 -- moves yank buffer to system clipboard, folke/which-key is around line ~160
 vim.keymap.set('n', '<leader>y', '"+y', { desc = 'Yank to clipboard' })
@@ -59,7 +58,8 @@ vim.keymap.set('v', '<leader>y', '"+y', { desc = 'Yank to clipboard' })
 vim.keymap.set('v', '<leader>Y', '"+y', { desc = 'Yank to clipboard' })
 
 -- deletes line without saving to buffer
-vim.keymap.set('n', '<leader>dd', '"_dd', { desc = 'Delete line w/o saving' })
+vim.keymap.set('n', '<leader>d', '"_d', { desc = 'Delete to void' })
+vim.keymap.set('v', '<leader>d', '"_d', { desc = 'Delete to void' })
 
 -- move selection to void register and paste current buffer
 vim.keymap.set('x', '<leader>p', '"dP')
@@ -326,151 +326,6 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sn', function() builtin.find_files { cwd = vim.fn.stdpath 'config' } end, { desc = '[S]earch [N]eovim files' })
     end,
   },
-  -- NOTE: LSP Configuration
-  { --Main Configuration
-    'neovim/nvim-lspconfig',
-    dependencies = {
-      -- Automatically install LSPs and related tools to stdpath for Neovim
-      -- Mason must be loaded before its dependents so we need to set it up here.
-      -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
-      {
-        'mason-org/mason.nvim',
-        ---@module 'mason.settings'
-        ---@type MasonSettings
-        ---@diagnostic disable-next-line: missing-fields
-        opts = {},
-      },
-      -- Maps LSP server names between nvim-lspconfig and Mason package names.
-      'mason-org/mason-lspconfig.nvim',
-      'WhoIsSethDaniel/mason-tool-installer.nvim',
-
-      -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim', opts = {} },
-    },
-    config = function()
-      vim.api.nvim_create_autocmd('LspAttach', {
-        group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
-        callback = function(event)
-          -- NOTE: Remember that Lua is a real programming language, and as such it is possible
-          -- to define small helper and utility functions so you don't have to repeat yourself.
-          --
-          -- In this case, we create a function that lets us more easily define mappings specific
-          -- for LSP related items. It sets the mode, buffer and description for us each time.
-          local map = function(keys, func, desc, mode)
-            mode = mode or 'n'
-            vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
-          end
-
-          -- Rename the variable under your cursor.
-          --  Most Language Servers support renaming across files, etc.
-          map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
-
-          -- Execute a code action, usually your cursor needs to be on top of an error
-          -- or a suggestion from your LSP for this to activate.
-          map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
-
-          -- WARN: This is not Goto Definition, this is Goto Declaration.
-          --  For example, in C this would take you to the header.
-          map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-
-          -- The following two autocommands are used to highlight references of the
-          -- word under your cursor when your cursor rests there for a little while.
-          --    See `:help CursorHold` for information about when this is executed
-          --
-          -- When you move your cursor, the highlights will be cleared (the second autocommand).
-          local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client:supports_method('textDocument/documentHighlight', event.buf) then
-            local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
-            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-              buffer = event.buf,
-              group = highlight_augroup,
-              callback = vim.lsp.buf.document_highlight,
-            })
-
-            vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-              buffer = event.buf,
-              group = highlight_augroup,
-              callback = vim.lsp.buf.clear_references,
-            })
-
-            vim.api.nvim_create_autocmd('LspDetach', {
-              group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
-              callback = function(event2)
-                vim.lsp.buf.clear_references()
-                vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = event2.buf }
-              end,
-            })
-          end
-
-          -- The following code creates a keymap to toggle inlay hints in your
-          -- code, if the language server you are using supports them
-          --
-          -- This may be unwanted, since they displace some of your code
-          if client and client:supports_method('textDocument/inlayHint', event.buf) then
-            map('<leader>th', function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf }) end, '[T]oggle Inlay [H]ints')
-          end
-        end,
-      })
-      -- NOTE: LSP, Linters, formatter instalations
-      ---@type table<string, vim.lsp.Config>
-      local servers = {
-
-        stylua = {}, -- Used to format Lua code
-        clangd = {},
-        ts_ls = {},
-        eslint_d = {},
-        intelephense = {},
-        duster = {},
-        gopls = {},
-        pyright = {},
-        ['css-lsp'] = {},
-        ['julia-lsp'] = {},
-        ['vue-language-server'] = {},
-
-        -- Special Lua Config, as recommended by neovim help docs
-        lua_ls = {
-          on_init = function(client)
-            if client.workspace_folders then
-              local path = client.workspace_folders[1].name
-              if path ~= vim.fn.stdpath 'config' and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc')) then return end
-            end
-
-            client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-              runtime = {
-                version = 'LuaJIT',
-                path = { 'lua/?.lua', 'lua/?/init.lua' },
-              },
-              workspace = {
-                checkThirdParty = false,
-                -- NOTE: this is a lot slower and will cause issues when working on your own configuration.
-                --  See https://github.com/neovim/nvim-lspconfig/issues/3189
-                library = vim.tbl_extend('force', vim.api.nvim_get_runtime_file('', true), {
-                  '${3rd}/luv/library',
-                  '${3rd}/busted/library',
-                }),
-              },
-            })
-          end,
-          settings = {
-            Lua = {},
-          },
-        },
-      }
-
-      -- Ensure the servers and tools above are installed
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        --Ensure here
-      })
-
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
-      for name, server in pairs(servers) do
-        vim.lsp.config(name, server)
-        vim.lsp.enable(name)
-      end
-    end,
-  },
   { -- Autoformat
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
@@ -574,76 +429,6 @@ require('lazy').setup({
       -- Shows a signature help window while you type arguments for a function
       signature = { enabled = true },
     },
-  },
-  -- NOTE:ColorScheme configuration
-  {
-    'marko-cerovac/material.nvim',
-    priority = 1000,
-    config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('material').setup {
-
-        styles = { -- Give comments style such as bold, italic, underline etc.
-          comments = { italic = true },
-          strings = {},
-          keywords = {},
-          functions = {},
-          variables = {},
-          operators = {},
-          types = {},
-        },
-
-        plugins = { -- Uncomment the plugins that you use to highlight them
-          'blink',
-          'indent-blankline',
-          'telescope',
-          'which-key',
-          --'mini',
-          -- "harpoon",
-          -- "hop",
-          -- "illuminate",
-        },
-
-        custom_highlights = {
-          -- UI
-          Normal = { fg = '#E6E1CF', bg = '#0A0E14' },
-          LineNr = { fg = '#d4d4d4' },
-          CursorLine = { bg = '#1f1f2e' },
-          CursorLineNr = { fg = '#FFB454', bold = true },
-          Cursor = { bg = '#FFB454' },
-          VertSplit = { fg = '#3B4260' },
-          WinSeparator = { fg = '#3B4260' },
-          Comment = { fg = '#5C6773', italic = true },
-
-          -- Syntax (Tree-sitter)
-          ['@variable'] = { fg = '#E6E1CF' },
-          ['@variable.member'] = { fg = '#E6E1CF' },
-          ['@field'] = { fg = '#E6E1CF' },
-          ['@string'] = { fg = '#AAD94C' },
-          ['@function'] = { fg = '#39BAE6' },
-          ['@function.call'] = { fg = '#39BAE6' },
-          ['@method'] = { fg = '#39BAE6' },
-          ['@type'] = { fg = '#39BAE6' },
-          ['@number'] = { fg = '#ff7733' },
-          ['@boolean'] = { fg = '#ff7733' },
-          ['@operator'] = { fg = '#fc9b52' },
-          ['@parameter'] = { fg = '#fc9b52' },
-          ['@keyword'] = { fg = '#fc9b52' },
-          ['@tag'] = { fg = '#fc9b52' },
-          ['@tag.attribute'] = { fg = '#fe59c2' },
-          ['@property'] = { fg = '#fe59c2' },
-        },
-      }
-
-      vim.cmd.colorscheme 'material-deep-ocean'
-      -- mini.statusline modes color
-      vim.api.nvim_set_hl(0, 'MiniStatuslineModeNormal', { fg = '#000000', bg = '#aad94c', bold = true })
-      vim.api.nvim_set_hl(0, 'MiniStatuslineModeInsert', { fg = '#000000', bg = '#ff7733', bold = true })
-      vim.api.nvim_set_hl(0, 'MiniStatuslineModeReplace', { fg = '#000000', bg = '#f960ff', bold = true })
-      vim.api.nvim_set_hl(0, 'MiniStatuslineModeVisual', { fg = '#000000', bg = '#fe59c2', bold = true })
-      vim.api.nvim_set_hl(0, 'MiniStatuslineModeCommand', { fg = '#000000', bg = '#e03939', bold = true })
-      vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#aad94c', bg = '#0A0E14', bold = true })
-    end,
   },
   { -- Highlight todo, notes, etc in comments
     'folke/todo-comments.nvim',
@@ -759,9 +544,10 @@ require('lazy').setup({
 
   require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
+  require 'kickstart.plugins.lsp',
+  require 'kickstart.plugins.colorscheme',
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns',
 }, { ---@diagnostic disable-line: missing-fields
   ui = {
