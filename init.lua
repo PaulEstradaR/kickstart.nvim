@@ -51,18 +51,17 @@ vim.keymap.set('n', '<leader>e', vim.cmd.Lexplore, { desc = 'File Explorer' })
 
 -- Insert new lines from normal mode
 vim.keymap.set('n', 'oo', 'o<Esc>k', { desc = '' })
+vim.keymap.set('n', 'OO', 'O<Esc>j', { desc = '' })
 
--- moves yank buffer to system clipboard, folke/which-key is around line ~160
+-- yanks to system clipboard
 vim.keymap.set('n', '<leader>y', '"+y', { desc = 'Yank to clipboard' })
 vim.keymap.set('v', '<leader>y', '"+y', { desc = 'Yank to clipboard' })
-vim.keymap.set('v', '<leader>Y', '"+y', { desc = 'Yank to clipboard' })
+vim.keymap.set('v', '<leader>Y', '"+Y', { desc = 'Yank to clipboard' })
 
--- deletes line without saving to buffer
+-- deletes without saving to buffer
 vim.keymap.set('n', '<leader>d', '"_d', { desc = 'Delete to void' })
 vim.keymap.set('v', '<leader>d', '"_d', { desc = 'Delete to void' })
-
--- move selection to void register and paste current buffer
-vim.keymap.set('x', '<leader>p', '"dP')
+vim.keymap.set('n', '<leader>D', '"_D', { desc = 'Delete to void' })
 
 -- moves selected lines in visual mode
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
