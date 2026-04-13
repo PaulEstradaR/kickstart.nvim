@@ -1,4 +1,4 @@
-return{
+return {
   -- NOTE:ColorScheme configuration
   {
     'marko-cerovac/material.nvim',
@@ -30,7 +30,7 @@ return{
 
         custom_highlights = {
           -- UI
-          Normal = { fg = '#E6E1CF', bg = '#0A0E14' },
+          Normal = { fg = '#f5f5f5', bg = '#0A0E14' },
           LineNr = { fg = '#d4d4d4' },
           CursorLine = { bg = '#1f1f2e' },
           CursorLineNr = { fg = '#FFB454', bold = true },
@@ -40,9 +40,9 @@ return{
           Comment = { fg = '#5C6773', italic = true },
 
           -- Syntax (Tree-sitter)
-          ['@variable'] = { fg = '#E6E1CF' },
-          ['@variable.member'] = { fg = '#E6E1CF' },
-          ['@field'] = { fg = '#E6E1CF' },
+          ['@variable'] = { fg = '#f5f5f5' },
+          ['@variable.member'] = { fg = '#f5f5f5' },
+          ['@field'] = { fg = '#f5f5f5' },
           ['@string'] = { fg = '#AAD94C' },
           ['@function'] = { fg = '#39BAE6' },
           ['@function.call'] = { fg = '#39BAE6' },
